@@ -45,16 +45,23 @@ class ProductList {
 class ShoppingCart {
 	items = []
 
+	set cartItems(value) {
+		this.items = value
+		this.totalOutput.innerHTML = `Total: \$${this.totalAmount}`
+	}
+
 	get totalAmount() {
 		const sum = this.items.reduce(
 			(prevValue, curItem) => prevValue + curItem.price,
 			0
 		)
+		return sum
 	}
 
 	addProduct(product) {
-		this.items.push(product)
-		this.totalOutput.innerHTML = `Total: \$${1}`
+		const updatedItems = [...this.items]
+		updatedItems.push(product)
+		this.cartItems = updatedItems
 	}
 
 	render() {
