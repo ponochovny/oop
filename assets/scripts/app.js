@@ -117,15 +117,16 @@ class ProductItem extends Component {
 }
 
 class ProductList extends Component {
-	products = []
+	#products = []
 
 	constructor(renderHook) {
-		super(renderHook)
-		this.fetchProducts()
+		super(renderHook, false)
+		this.render()
+		this.#fetchProducts()
 	}
 
-	fetchProducts() {
-		this.products = [
+	#fetchProducts() {
+		this.#products = [
 			new Product(
 				'A Pillow',
 				'https://www.maxpixel.net/static/photo/1x/Sofa-Living-Room-Real-Estate-Table-Picture-6893109.jpg',
@@ -143,7 +144,7 @@ class ProductList extends Component {
 	}
 
 	renderProducts() {
-		for (const prod of this.products) {
+		for (const prod of this.#products) {
 			new ProductItem(prod, 'prod-list')
 		}
 	}
@@ -152,7 +153,7 @@ class ProductList extends Component {
 		this.createRootElement('ul', 'product-list', [
 			new ElementAttribute('id', 'prod-list'),
 		])
-		if (this.products && this.products.length > 0) {
+		if (this.#products && this.#products.length > 0) {
 			this.renderProducts()
 		}
 	}
