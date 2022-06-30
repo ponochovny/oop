@@ -12,36 +12,6 @@ class Product {
 	}
 }
 
-class ProductList {
-	products = [
-		new Product(
-			'A Pillow',
-			'https://www.maxpixel.net/static/photo/1x/Sofa-Living-Room-Real-Estate-Table-Picture-6893109.jpg',
-			'A soft pillow!',
-			19.99
-		),
-		new Product(
-			'A Carpet',
-			'https://www.maxpixel.net/static/photo/1x/Colors-Clothing-Fabric-Rugs-Material-Carpet-6782082.jpg',
-			'A carpet which you might like - or not.',
-			89.99
-		),
-	]
-
-	constructor() {}
-
-	render() {
-		const prodList = document.createElement('ul')
-		prodList.className = 'product-list'
-		for (const prod of this.products) {
-			const productItem = new ProductItem(prod)
-			const prodEl = productItem.render()
-			prodList.append(prodEl)
-		}
-		return prodList
-	}
-}
-
 class ElementAttribute {
 	constructor(attrName, attrValue) {
 		this.name = attrName
@@ -105,8 +75,9 @@ class ShoppingCart extends Component {
 	}
 }
 
-class ProductItem {
-	constructor(product) {
+class ProductItem extends Component {
+	constructor(product, renderHookId) {
+		super(renderHookId)
 		this.product = product
 	}
 
@@ -115,8 +86,7 @@ class ProductItem {
 	}
 
 	render() {
-		const prodEl = document.createElement('li')
-		prodEl.className = 'product-item'
+		const prodEl = this.createRootElement('li', 'product-item')
 		prodEl.innerHTML = `
       <div>
         <img src="${this.product.imageUrl}" alt="${this.product.title}" />
@@ -130,20 +100,46 @@ class ProductItem {
     `
 		const addCartButton = prodEl.querySelector('button')
 		addCartButton.addEventListener('click', this.addToCart.bind(this))
-		return prodEl
+	}
+}
+
+class ProductList extends Component {
+	products = [
+		new Product(
+			'A Pillow',
+			'https://www.maxpixel.net/static/photo/1x/Sofa-Living-Room-Real-Estate-Table-Picture-6893109.jpg',
+			'A soft pillow!',
+			19.99
+		),
+		new Product(
+			'A Carpet',
+			'https://www.maxpixel.net/static/photo/1x/Colors-Clothing-Fabric-Rugs-Material-Carpet-6782082.jpg',
+			'A carpet which you might like - or not.',
+			89.99
+		),
+	]
+
+	constructor(renderHook) {
+		super(renderHook)
+	}
+
+	render() {
+		this.createRootElement('ul', 'product-list', [
+			new ElementAttribute('id', 'prod-list'),
+		])
+		for (const prod of this.products) {
+			const productItem = new ProductItem(prod, 'prod-list')
+			productItem.render()
+		}
 	}
 }
 
 class Shop {
 	render() {
-		const renderHook = document.getElementById('app')
-
 		this.cart = new ShoppingCart('app')
 		this.cart.render()
-		const productList = new ProductList()
-		const prodListEl = productList.render()
-
-		renderHook.append(prodListEl)
+		const productList = new ProductList('app')
+		productList.render()
 	}
 }
 
