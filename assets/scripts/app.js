@@ -20,9 +20,14 @@ class ElementAttribute {
 }
 
 class Component {
-	constructor(renderHookId) {
+	constructor(renderHookId, shouldRender = true) {
 		this.hookId = renderHookId
+		if (shouldRender) {
+			this.render()
+		}
 	}
+
+	render() {}
 
 	createRootElement(tag, cssClasses, attributes) {
 		const rootElement = document.createElement(tag)
@@ -77,8 +82,9 @@ class ShoppingCart extends Component {
 
 class ProductItem extends Component {
 	constructor(product, renderHookId) {
-		super(renderHookId)
+		super(renderHookId, false)
 		this.product = product
+		this.render()
 	}
 
 	addToCart() {
@@ -104,42 +110,55 @@ class ProductItem extends Component {
 }
 
 class ProductList extends Component {
-	products = [
-		new Product(
-			'A Pillow',
-			'https://www.maxpixel.net/static/photo/1x/Sofa-Living-Room-Real-Estate-Table-Picture-6893109.jpg',
-			'A soft pillow!',
-			19.99
-		),
-		new Product(
-			'A Carpet',
-			'https://www.maxpixel.net/static/photo/1x/Colors-Clothing-Fabric-Rugs-Material-Carpet-6782082.jpg',
-			'A carpet which you might like - or not.',
-			89.99
-		),
-	]
+	products = []
 
 	constructor(renderHook) {
 		super(renderHook)
+		this.fetchProducts()
+	}
+
+	fetchProducts() {
+		this.products = [
+			new Product(
+				'A Pillow',
+				'https://www.maxpixel.net/static/photo/1x/Sofa-Living-Room-Real-Estate-Table-Picture-6893109.jpg',
+				'A soft pillow!',
+				19.99
+			),
+			new Product(
+				'A Carpet',
+				'https://www.maxpixel.net/static/photo/1x/Colors-Clothing-Fabric-Rugs-Material-Carpet-6782082.jpg',
+				'A carpet which you might like - or not.',
+				89.99
+			),
+		]
+		this.renderProducts()
+	}
+
+	renderProducts() {
+		for (const prod of this.products) {
+			new ProductItem(prod, 'prod-list')
+		}
 	}
 
 	render() {
 		this.createRootElement('ul', 'product-list', [
 			new ElementAttribute('id', 'prod-list'),
 		])
-		for (const prod of this.products) {
-			const productItem = new ProductItem(prod, 'prod-list')
-			productItem.render()
+		if (this.products && this.products.length > 0) {
+			this.renderProducts()
 		}
 	}
 }
 
 class Shop {
+	constructor() {
+		this.render()
+	}
+
 	render() {
 		this.cart = new ShoppingCart('app')
-		this.cart.render()
-		const productList = new ProductList('app')
-		productList.render()
+		new ProductList('app')
 	}
 }
 
@@ -148,7 +167,6 @@ class App {
 
 	static init() {
 		const shop = new Shop()
-		shop.render()
 		this.cart = shop.cart
 	}
 
